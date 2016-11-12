@@ -1,7 +1,8 @@
 module.exports =
 {
     givePoint: function (req,res) {
-        var queryString = "select * from chips";
+
+        //console.log(req.body+" "+req.cookies.userID);
 
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err,connection) {
@@ -14,6 +15,7 @@ module.exports =
                             //throw err;
                             if(err)
                             {
+                                connection.release();
                                 res.send("fail");
                             }
                         });
@@ -34,6 +36,7 @@ module.exports =
                                 });
                             }
                             console.log('success!');
+                            connection.release();
                             res.send("success");
                         });
                     });

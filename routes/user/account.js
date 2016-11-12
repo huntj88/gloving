@@ -18,21 +18,26 @@ module.exports =
                 }
                 else {
                     connection.release();
-                    console.log(results);
-                    bcrypt.compare(req.body.password, results[0].password, function(err, hashRes) {
-                    //bcrypt.compare(results.password, req.body.password, function(err, hashRes) {
 
-                        console.log(err);
-                        if(hashRes==true)
-                        {
-                            res.cookie('userID', results[0].userID);
-                            res.cookie('apiKey', results[0].password.substring(35));
-                            res.cookie('username', req.body.username);
-                            res.send("<script>location.href = '../../';</script>");
-                        }
-                        else
-                            res.send("invalid credentials");
-                    });
+                    if(results.length!=0) {
+                        console.log(results);
+                        bcrypt.compare(req.body.password, results[0].password, function (err, hashRes) {
+                            //bcrypt.compare(results.password, req.body.password, function(err, hashRes) {
+
+                            console.log(err);
+                            if (hashRes == true) {
+                                res.cookie('userID', results[0].userID);
+                                res.cookie('apiKey', results[0].password.substring(35));
+                                res.cookie('username', req.body.username);
+                                res.send("<script>location.href = '../../';</script>");
+                            }
+                            else
+                                res.send("invalid credentials");
+                        });
+                    }
+                    else {
+                        res.send("invalid credentials");
+                    }
                 }
             });
         });

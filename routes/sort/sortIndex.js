@@ -5,6 +5,7 @@ module.exports =
         var mysqlPool = require("../../utils/mysqlPool");
 
         console.log(req.body);
+        console.log(req.cookies);
 
         var whereClause = " WHERE ";
         var needsAnd = false;
@@ -44,17 +45,22 @@ module.exports =
             subquery+=whereClause;
         }
 
-        var queryString = "SELECT setID, userID, username, patternID, patternName, chipID, chipName, setName, unixTimeCreated, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns USING(patternID) where setID in ("+subquery+") group by setID";
+        var userID = req.cookies.userID;
+        if(userID == undefined)
+            userID=0;
+
+
+        var queryString = "SELECT setID, userID, username, patternID, patternName, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns USING(patternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+") group by sets.setID";
 
         mysqlPool.getConnection(function (err, connection) {
-            connection.query(queryString, [],
+            connection.query(queryString, [userID],
                 function (error, results, fields) {
                     if (error) {
                         console.log("error in sortIndex");
                         throw error;
                     } else {
 
-                        console.log(queryString);
+                        //console.log(queryString);
                         res.send(results);
                     }
                     connection.release();

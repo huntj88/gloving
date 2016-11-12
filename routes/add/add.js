@@ -70,6 +70,7 @@ router.post('/getAllAddedPatterns', function (req, res, next) {
 
 router.post('/givePoint', function (req, res, next) {
     var request = require('./points');
+    console.log("hi");
     request.givePoint(req, res);
 });
 

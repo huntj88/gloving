@@ -1,3 +1,40 @@
+function bindButton(i,setID) {
+    console.log(i);
+    var button = $("#"+i);
+   button.bind("click", function(){
+        if(button.css("background-color")!="rgb(255, 165, 0)") {
+
+            $.ajax({
+                url: "./add/givePoint",
+                type: "POST",
+                data: "setID="+setID,
+                success: function (point) {
+                    console.log(point);
+                    if(point=="success") {
+                        button.text(parseInt(button.text()) + 1);
+                        button.css("background-color", "orange");
+                    }
+                    else if(point=="fail")
+                    {
+
+                    }
+                    else {
+                        alert(point);
+                    }
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown+" "+textStatus);
+                }
+            });
+        }
+        else {
+            //remove point
+        }
+
+    });
+}
+
+
 function loadAndDisplaySets(params) {
     $.ajax({
         url: "../sort/sortIndex",
@@ -12,7 +49,11 @@ function loadAndDisplaySets(params) {
 
             for (var i = 0; i < data.length; i++) {
                 htmlString += "<tr>";
-                htmlString += "<td><button>0</button></td>";
+                console.log(data[i].pointed);
+                if(data[i].pointed==null)
+                    htmlString += "<td><button id='pointButton"+i+"'>" + data[i].setPoints + "</button></td>";
+                else
+                    htmlString += "<td><button style='background-color: orange' id='pointButton"+i+"'>" + data[i].setPoints + "</button></td>";
                 htmlString += "<td>" + data[i].setName + "</td>";
                 htmlString += "<td>" + data[i].chipName + "</td>";
                 htmlString += "<td>" + "<form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+data[i].userID+"' /><input type='hidden' name='username' value='"+data[i].username+"' /><a href='#' onclick='this.parentNode.submit()'>"+data[i].username+"</a></form>" + "</td>";
@@ -46,6 +87,16 @@ function loadAndDisplaySets(params) {
             htmlString += "</table>";
 
             $("#gloveSetsDiv").html(htmlString);
+
+            //bindButton("pointButton1");
+            for (i = 0; i < data.length; i++) {
+
+                (function (i) {
+                    bindButton("pointButton"+i,data[i].setID);
+                }(i));
+
+
+            }
         },
         error: function (jXHR, textStatus, errorThrown) {
             alert(errorThrown);

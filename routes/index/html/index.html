@@ -75,15 +75,17 @@
             $("#logout").click(function (event) {
                 Cookies.remove('userID');
                 Cookies.remove('apiKey');
-                logInFormOrLoggedIn();
+                Cookies.remove('username');
+                //logInFormOrLoggedIn();
+                location.reload();
             });
 
             function logInFormOrLoggedIn() {
                 var userID = getCookie("userID");
                 var apiKey = getCookie("apiKey");
                 var username = getCookie("username");
-                console.log(userID);
-                console.log(username);
+                //console.log(userID);
+                //console.log(username);
 
                 if((userID!=undefined&&userID!="")&&apiKey!=undefined)
                 {
@@ -135,10 +137,18 @@
             <tr>
                 <td>chip</td>
                 <td>color</td>
+                <td>time</td>
             </tr>
             <tr>
                 <td id="chipsTD"></td>
                 <td id="colorTD"></td>
+                <td id="timeTD">
+                    <select name='timeID'>
+                        <option value="0">Hot</option>
+                        <option value="1">All Time</option>
+                        <option value="2">New</option>
+                    </select>
+                </td>
                 <td><input type="submit"></td>
             </tr>
         </table>
