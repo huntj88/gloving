@@ -1,0 +1,16 @@
+div.content{
+    width:1200px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+div.top{
+    width:100%;
+    background: yellowgreen;
+    height: 150px;
+}
+
+div.gloveSets{
+    width: 100%;
+    background: #7a7a7a;
+}

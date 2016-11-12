@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+
+        var getChipsUrl = "./getAllAddedChips";
+        var getPatternsUrl = "./getAllPatternsForChip";
+        var getColorsUrl = "./getAllColorsForChip";
+
+        var chipsG = [];
+        var brightArray = ["","H","M","L"];
+        var selectedChipIndexInArray = 0;
+
+        $(document).ready(function () {
+
+            $.ajax({
+                url: getChipsUrl,
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (chips) {
+                    chipsG = chips;
+                    var htmlString = "";
+                    htmlString+="<select id='chipDropDown' name='chipID' style='margin-top: 4px'>";
+                    htmlString+="<option>select chip</option>";
+                    for(var z = 0;z<chips.length;z++)
+                    {
+                        console.log(chips[z]);
+                        htmlString+="<option value='"+chips[z].chipID+"'>"+chips[z].chipName+"</option>";
+                    }
+                    htmlString+="</select><br>";
+                    $("#chips").html(htmlString);
+                    addPatternSelect();
+                    addColorSelect();
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+            function addPatternSelect() {
+                $('#chipDropDown').bind('change', function() {
+                    $.ajax({
+                        url: getPatternsUrl,
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function (patterns) {
+
+                            var htmlString = "";
+                            htmlString+="<select id='patternDropDown' name='patternID' style='margin-top: 4px'>";
+                            htmlString+="<option>select pattern</option>";
+                            for(var z = 0;z<patterns.length;z++)
+                            {
+                                htmlString+="<option value='"+patterns[z].patternID+"'>"+patterns[z].patternName+"</option>";
+                            }
+                            htmlString+="</select><br>";
+                            $("#patterns").html(htmlString);
+
+                        },
+                        error: function (jXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                });
+            }
+
+
+            function addColorSelect() {
+                $('#chipDropDown').bind('change', function() {
+                    $.ajax({
+                        url: getColorsUrl,
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function (colors) {
+
+                            for(var find = 0;find<chipsG.length;find++)
+                            {
+                                if(chipsG[find].chipID==$("#chipDropDown").val())
+                                {
+                                    selectedChipIndexInArray = find;
+                                    find = chipsG.length;
+                                }
+                            }
+
+                            console.log(chipsG[selectedChipIndexInArray].colorsPerMode);
+                            var htmlString = "<table class='skinny' cellspacing='0' cellpadding='0'>";
+                            htmlString+="<tr>";
+                            for(var i = 0;i<chipsG[selectedChipIndexInArray].colorsPerMode;i++) {
+
+
+                                htmlString += "<td><select id='colorDropDown"+i+"' name='colorID' style='margin-top: 4px'>";
+                                htmlString += "<option value='0'>select color</option>";
+                                for (var z = 0; z < colors.length; z++) {
+                                    htmlString += "<option style = 'background: #"+colors[z].hex+"' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
+                                }
+                                htmlString += "</td></select>";
+                            }
+                            htmlString+="</tr><tr>";
+
+                            for(var i = 0;i<chipsG[selectedChipIndexInArray].colorsPerMode;i++) {
+
+
+                                htmlString += "<td><select id='tintDropDown"+i+"' name='tint' style='margin-top: 4px'>";
+                                for (var z = 1; z < chipsG[selectedChipIndexInArray].brightnessLevels+1; z++) {
+                                    htmlString += "<option value='" + z + "'>" + brightArray[z] + "</option>";
+                                }
+                                htmlString += "</td></select>";
+                            }
+
+                            htmlString+="</tr></table>";
+                            $("#colors").html(htmlString);
+
+                        },
+                        error: function (jXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                });
+            }
+
+
+
+        });
+    </script>
+</head>
+<body>
+
+<form method="post" action="../add/addSet">
+    <input type="text" placeholder="name of set" name="setName">
+    <div id="chips"></div>
+    <div id="patterns"></div>
+    <div id="colors"></div>
+    <input type="submit">
+</form>
+</body>
+</html>

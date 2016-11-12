@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+
+    <script>
+
+        var getChipsUrl = "http://138.68.41.247:3000/add/getAllAddedChips";
+        var getPatternsUrl = "http://138.68.41.247:3000/add/getAllPatternsForChip";
+        var getColorsUrl = "http://138.68.41.247:3000/add/getAllAddedColors";
+
+        var chipsG = [];
+        var selectedChipIndexInArray = 0;
+
+        $(document).ready(function () {
+            logInFormOrLoggedIn();
+
+            loadAndDisplaySets("chipID=0&colorID=0");
+
+            $.ajax({
+                url: getChipsUrl,
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (chips) {
+                    chipsG = chips;
+                    var htmlString = "";
+                    htmlString += "<select id='chipDropDown' name='chipID' style='margin-top: 4px'>";
+                    htmlString += "<option value='0'>all chips</option>";
+                    for (var z = 0; z < chips.length; z++) {
+                        console.log(chips[z]);
+                        htmlString += "<option value='" + chips[z].chipID + "'>" + chips[z].chipName + "</option>";
+                    }
+                    htmlString += "</select>";
+                    $("#chipsTD").html(htmlString);
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+            $.ajax({
+                url: getColorsUrl,
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (colors) {
+                    //chipsG = chips;
+                    var htmlString = "";
+                    htmlString += "<select id='colorDropDown' name='colorID' style='margin-top: 4px'>";
+                    htmlString += "<option value='0'>all colors</option>";
+                    for (var z = 0; z < colors.length; z++) {
+                        htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
+                    }
+                    htmlString += "</select>";
+                    $("#colorTD").html(htmlString);
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+            $('#sortForm').on('submit', function (e) {
+
+                e.preventDefault();
+                console.log($(this).serialize());
+                loadAndDisplaySets($(this).serialize())
+
+            });
+
+            /*$('#makeAccountButton').click(function(event){
+
+                location.href = '../user/createAccount';
+            });*/
+
+            $("#logout").click(function (event) {
+                Cookies.remove('userID');
+                Cookies.remove('apiKey');
+                logInFormOrLoggedIn();
+            });
+
+            function loadAndDisplaySets(params) {
+                $.ajax({
+                    url: "./sort/sortIndex",
+                    type: "POST",
+                    data: params,
+                    success: function (data) {
+
+                        htmlString = "<table>";
+
+                        htmlString+="<tr style='color:orange'><td>name</td><td>chip</td><td>author</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
+
+
+                        for(var i=0;i<data.length;i++)
+                        {
+                            htmlString+="<tr>";
+                            htmlString+="<td>"+data[i].setName+"</td>";
+                            htmlString+="<td>"+data[i].chipName+"</td>";
+                            htmlString+="<td>"+data[i].username+"</td>";
+                            htmlString+="<td>"+data[i].patternName+"</td>";
+
+                            var hex = data[i].hexCodes.split(",");
+                            var brightness = data[i].brightnessLevels.split(",");
+                            var brightArray = ["","H","M","L"];
+                            htmlString+="<td><table><tr>";
+                            for(var z = 0;z<hex.length;z++)
+                            {
+                                htmlString+="<td><div class='colorSqaure' style='background:#"+hex[z]+"'>"+brightArray[brightness[z]]+"</div></td>";
+                            }
+                            htmlString+="</tr></table></td>";
+
+                            var colorNames = data[i].colorNames.split(",");
+
+                            htmlString+="<td><table><tr>";
+                            for(var z = 0;z<hex.length;z++)
+                            {
+                                htmlString+="<td style='color: #"+hex[z]+"'>"+colorNames[z]+"</td>";
+                                htmlString+="<td>|</td>";
+                            }
+                            htmlString+="</tr></table></td>";
+
+
+                            htmlString+="</tr>";
+                        }
+
+                        htmlString+="</table>";
+
+                        $("#gloveSetsDiv").html(htmlString);
+                    },
+                    error: function (jXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            }
+
+            function logInFormOrLoggedIn() {
+                var userID = getCookie("userID");
+                var apiKey = getCookie("apiKey");
+                var username = getCookie("username");
+                console.log(userID);
+                console.log(username);
+
+                if((userID!=undefined&&userID!="")&&apiKey!=undefined)
+                {
+                    $("#rightHeader").html("logged in as <form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+userID+"' /><a href='#' onclick='this.parentNode.submit()'>"+username+"</a></form><a href='./add/addSet'>addSet</a> <button id='logout'>logout</button>");
+                }
+                else {
+                    $("#rightHeader").html("<form id='loginForm' method='post' action='./user/login'> " +
+                        "<input type='text' name='username' placeholder='username'><br> "+
+                        "<input type='password' name='password' placeholder='password'><br>"+
+                        "<a href='../user/createAccount'>make account</a>"+
+                        "<input style='float: right' type='submit'>"+
+                    "</form>");
+                }
+            }
+
+            function getCookie(cname) {
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
+                for(var i = 0; i <ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0)==' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length,c.length);
+                    }
+                }
+                return "";
+            }
+
+
+        });
+    </script>
+
+</head>
+<body>
+<div class="header">
+    <div class="leftHeader">
+        <p style="font-size: 50px">my super cool TITLE</p>
+    </div>
+    <div class="rightHeader" id="rightHeader">
+        
+    </div>
+</div>
+
+<div class="regularSort">
+    <form id="sortForm">
+        <table>
+            <tr>
+                <td>chip</td>
+                <td>color</td>
+            </tr>
+            <tr>
+                <td id="chipsTD"></td>
+                <td id="colorTD"></td>
+                <td><input type="submit"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="gloveSets" id="gloveSetsDiv"></div>
+
+</body>
+</html>

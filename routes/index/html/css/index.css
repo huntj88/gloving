@@ -1,0 +1,52 @@
+html,div,p{
+    margin: 0;
+    padding: 0;
+}
+
+div.header {
+    width: 1200px;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    background: orange;
+}
+
+div.leftHeader{
+    line-height: 80px;
+    float:left;
+}
+
+div.rightHeader{
+    margin-right: 10px;
+    margin-top: 10px;
+    float: right;
+}
+
+div.regularSort {
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #ff9487;
+}
+
+div.gloveSets{
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #7a7a7a;
+}
+
+div.colorSqaure{
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    text-align: center;
+}
+
+div.menuBar{
+    width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #fff698;
+}

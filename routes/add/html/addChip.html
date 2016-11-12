@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+
+        var availableColors = [];
+        var availableColorIDs = [];
+        var duplicate = "";
+        $(document).ready(function () {
+
+
+            $.ajax({
+                url: "./getAllAddedColors",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++){
+                        var obj = data[i];
+                        availableColors.push(obj.colorName);
+                        availableColorIDs.push(obj.colorID);
+                    }
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+            $('form').on('keyup change', 'input', function () {
+                if ($(this).attr('id') == "colorNumTotal") {
+                    fillColorAmount($("#colorNumTotal").val());
+                }
+            });
+
+            $('#chipForm').on('submit', function (e) {
+
+
+
+                var colorArray = [];
+                var ammount = $("#colorNumTotal").val();
+
+                for(var i = 0; i<ammount;i++)
+                    colorArray[i] = $("#"+i).val();
+
+                if(!hasDuplicates(colorArray))
+                {
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function (data) {
+
+                        },
+                        error: function (jXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                }
+                else{
+                    e.preventDefault();
+                    var index = availableColorIDs.indexOf(parseInt(duplicate));
+                    alert("contains duplicate color: "+availableColors[index]);
+                }
+
+
+            });
+
+            /*$("#submit").click(function(){
+
+             var colorArray = [];
+             var ammount = $("#colorNum").val();
+
+             for(var i = 0; i<ammount;i++)
+             colorArray[i] = $("#"+i).val();
+
+             $.post("../add/addChip",{name: $("#name").val(), brightnessNum: $("#brightness").val(), color: colorArray}, function(data){
+             alert(data);
+             });
+             });*/
+
+
+        });
+
+
+        function fillColorAmount(num) {
+
+            var htmlString = "<br>type all the different colors<br>";
+            /*for (var i = 0; i < num; i++) {
+                htmlString += "<input type='text' name='color' id='" + i + "'><br>";
+            }*/
+
+            for(var i = 0;i<num;i++)
+            {
+                htmlString+="<select id='" + i + "' name='color' style='margin-top: 4px'>";
+                for(var z = 0;z<availableColors.length;z++)
+                {
+                    htmlString+="<option value="+availableColorIDs[z]+">"+availableColors[z]+"</option>";
+                }
+                htmlString+="</select><br>";
+            }
+
+            document.getElementById("colors").innerHTML = htmlString + "<br>";
+        }
+
+
+        function hasDuplicates(array) {
+            var valuesSoFar = Object.create(null);
+            for (var i = 0; i < array.length; ++i) {
+                var value = array[i];
+                if (value in valuesSoFar) {
+                    duplicate = value;
+                    return true;
+                }
+                valuesSoFar[value] = true;
+            }
+            return false;
+        }
+    </script>
+
+</head>
+<body>
+<form id="chipForm">
+
+    <table>
+        <tr>
+            <td>chip name:</td>
+            <td><input type="text" name="name" id="name"></td>
+        </tr>
+        <tr>
+            <td>total number of colors:</td>
+            <td><input type="number" name="colorNumTotal" id="colorNumTotal"></td>
+        </tr>
+        <tr>
+            <td>number of colors per mode:</td>
+            <td><input type="number" name="colorNum" id="colorNum"></td>
+        </tr>
+        <tr>
+            <td>number of patterns:</td>
+            <td><input type="number" name="numPatterns" id="numPatterns"></td>
+        </tr>
+        <tr>
+            <td>num brightness levels:</td>
+            <td><input type="number" name="brightnessNum" id="brightness"></td>
+        </tr>
+
+    </table>
+
+    <div id="colors"></div>
+
+    <input type="submit">
+</form>
+
+</body>
+</html>
