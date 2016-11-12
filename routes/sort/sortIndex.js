@@ -36,7 +36,7 @@ module.exports =
             needsAnd = true;
         }
 
-        var subquery = "SELECT setID FROM sets join setColors using(setID)";
+        var subquery = "SELECT distinct setID FROM sets join setColors using(setID)";
 
 
         if(needsAnd)
@@ -54,7 +54,7 @@ module.exports =
                         throw error;
                     } else {
 
-                        console.log(results);
+                        console.log(queryString);
                         res.send(results);
                     }
                     connection.release();

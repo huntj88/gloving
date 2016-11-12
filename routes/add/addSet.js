@@ -6,11 +6,12 @@ module.exports =
 
     addSet: function(req, res){
 
-        var queryString = "INSERT IGNORE INTO sets (userID,patternID,chipID,setName) VALUES (1,?,?,?)";
+        var queryString = "INSERT IGNORE INTO sets (userID,patternID,chipID,setName) VALUES (?,?,?,?)";
 
+        console.log(req.body);
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err,connection) {
-            connection.query(queryString,[req.body.patternID,req.body.chipID,req.body.setName],function (error,results,fields) {
+            connection.query(queryString,[req.cookies.userID,req.body.patternID,req.body.chipID,req.body.setName],function (error,results,fields) {
                 if(error)
                 {
                     console.log("Error is in addset");
@@ -104,7 +105,6 @@ module.exports =
 
         var queryString = "SELECT patternID,patternName FROM patternsOnChips join patterns USING(patternID) where chipID = ?";
 
-        console.log(req.body);
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err,connection) {
             connection.query(queryString,[req.body.chipID],function (error,results,fields) {
