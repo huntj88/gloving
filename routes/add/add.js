@@ -68,6 +68,12 @@ router.post('/getAllAddedPatterns', function (req, res, next) {
 });
 
 
+router.post('/givePoint', function (req, res, next) {
+    var request = require('./points');
+    request.givePoint(req, res);
+});
+
+
 router.get('/js/:resource', function(req, res, next) {
     res.sendFile(path.join(__dirname+'/html/js/'+req.params.resource));
 });

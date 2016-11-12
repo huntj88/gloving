@@ -36,6 +36,7 @@
                         htmlString += "<option value='" + chips[z].chipID + "'>" + chips[z].chipName + "</option>";
                     }
                     htmlString += "</select>";
+                    console.log(htmlString);
                     $("#chipsTD").html(htmlString);
                 },
                 error: function (jXHR, textStatus, errorThrown) {

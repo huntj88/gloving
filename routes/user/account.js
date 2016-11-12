@@ -37,12 +37,5 @@ module.exports =
             });
         });
 
-    },
-
-    viewAccount: function (req, res) {
-
-        //get all information from database;
-
-
     }
 };

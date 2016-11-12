@@ -13,6 +13,8 @@
         $(document).ready(function () {
 
             loadAndDisplaySets("userID=" + getUrlParameter("userID"));
+
+            $("#top").html("<p style='font-size: 40px'>"+getUrlParameter("username")+"</p>");
         });
 
 
@@ -20,8 +22,7 @@
 </head>
 <body>
 <div class="content">
-    <div class="top">
-        ssdfsdfs
+    <div class="top" id="top">
     </div>
     <div class="gloveSets" id="gloveSetsDiv">
         dfs

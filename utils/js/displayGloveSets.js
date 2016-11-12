@@ -7,14 +7,18 @@ function loadAndDisplaySets(params) {
 
             htmlString = "<table>";
 
-            htmlString += "<tr style='color:orange'><td>name</td><td>chip</td><td>author</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
+            htmlString += "<tr style='color:orange'><td>points</td><td>name</td><td>chip</td><td>author</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
 
 
             for (var i = 0; i < data.length; i++) {
                 htmlString += "<tr>";
+                htmlString += "<td><button>0</button></td>";
                 htmlString += "<td>" + data[i].setName + "</td>";
                 htmlString += "<td>" + data[i].chipName + "</td>";
-                htmlString += "<td>" + data[i].username + "</td>";
+                htmlString += "<td>" + "<form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+data[i].userID+"' /><input type='hidden' name='username' value='"+data[i].username+"' /><a href='#' onclick='this.parentNode.submit()'>"+data[i].username+"</a></form>" + "</td>";
+
+                //
+
                 htmlString += "<td>" + data[i].patternName + "</td>";
 
                 var hex = data[i].hexCodes.split(",");

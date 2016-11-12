@@ -8,7 +8,6 @@ module.exports =
 
         var queryString = "INSERT IGNORE INTO sets (userID,patternID,chipID,setName) VALUES (?,?,?,?)";
 
-        console.log(req.body);
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err,connection) {
             connection.query(queryString,[req.cookies.userID,req.body.patternID,req.body.chipID,req.body.setName],function (error,results,fields) {

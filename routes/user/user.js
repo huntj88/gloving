@@ -28,7 +28,7 @@ router.post('/login', function (req, res, next) {
 router.post('/viewAccount', function(req, res, next) {
     /*var request = require('./account');
     request.viewAccount(req,res);*/
-    res.redirect("./viewAccount?userID="+req.body.userID);
+    res.redirect("./viewAccount?userID="+req.body.userID+"&username="+req.body.username);
 });
 
 router.get('/viewAccount', function(req, res, next) {
