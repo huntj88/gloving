@@ -47,7 +47,7 @@ module.exports =
                         }
                         else{
                             console.log(params);
-                            res.send("set added!");
+                            res.redirect("../user/viewAccount");
                             connection.release();
                         }
                     });

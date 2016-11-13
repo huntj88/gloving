@@ -50,7 +50,20 @@ module.exports =
             userID=0;
 
 
-        var queryString = "SELECT setID, userID, username, patternID, patternName, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns USING(patternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+") group by sets.setID";
+        var queryString = "SELECT setID, userID, username, patternID, patternName, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns USING(patternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";
+
+
+        if(req.body.timeID==1) //all time
+        {
+            queryString+=" group by sets.setID order by setPoints desc";
+        } else if(req.body.timeID==2)  //new
+        {
+            queryString+=" group by sets.setID order by sets.setID desc";
+        } else if(req.body.timeID==0) //hot
+        {
+            //one week
+            queryString+=" and UNIX_TIMESTAMP(now())-604800 < unixTimeCreated group by sets.setID order by setPoints desc";
+        }
 
         mysqlPool.getConnection(function (err, connection) {
             connection.query(queryString, [userID],

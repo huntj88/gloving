@@ -7,14 +7,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="../utils/js/displayGloveSets.js"></script>
     <script src="../utils/js/retrieveGetParams.js"></script>
+    <script src="../utils/js/getCookies.js"></script>
     <script>
 
 
         $(document).ready(function () {
 
-            loadAndDisplaySets("userID=" + getUrlParameter("userID"));
+            var urlParam = getUrlParameter("userID");
+            var paramList = "";
+            if(urlParam==undefined) {
+                paramList += "userID=" + getCookie("userID");
+                paramList += "&timeID=2";
+                loadAndDisplaySets(paramList);
+                $("#top").html("<p style='font-size: 40px'>"+getCookie("username")+"</p>");
+            }
+            else {
+                loadAndDisplaySets("userID=" + getUrlParameter("userID") + "&timeID=2");
+                $("#top").html("<p style='font-size: 40px'>"+getUrlParameter("username")+"</p>");
+            }
 
-            $("#top").html("<p style='font-size: 40px'>"+getUrlParameter("username")+"</p>");
+
         });
 
 

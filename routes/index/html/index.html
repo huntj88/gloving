@@ -6,6 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.js"></script>
     <script src="../utils/js/displayGloveSets.js"></script>
+    <script src="../utils/js/getCookies.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/index.css">
 
     <script>
@@ -20,7 +21,7 @@
         $(document).ready(function () {
             logInFormOrLoggedIn();
 
-            loadAndDisplaySets("chipID=0&colorID=0");
+            loadAndDisplaySets("chipID=0&colorID=0&timeID=0");
 
             $.ajax({
                 url: getChipsUrl,
@@ -89,7 +90,7 @@
 
                 if((userID!=undefined&&userID!="")&&apiKey!=undefined)
                 {
-                    $("#rightHeader").html("logged in as <form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+userID+"' /><a href='#' onclick='this.parentNode.submit()'>"+username+"</a></form><a href='./add/addSet'>addSet</a> <button id='logout'>logout</button>");
+                    $("#rightHeader").html("logged in as <form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+userID+"' /><input type='hidden' name='username' value='"+username+"' /><a href='#' onclick='this.parentNode.submit()'>"+username+"</a></form><a href='./add/addSet'>addSet</a> <button id='logout'>logout</button>");
                 }
                 else {
                     $("#rightHeader").html("<form id='loginForm' method='post' action='./user/login'> " +
@@ -101,20 +102,7 @@
                 }
             }
 
-            function getCookie(cname) {
-                var name = cname + "=";
-                var ca = document.cookie.split(';');
-                for(var i = 0; i <ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0)==' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length,c.length);
-                    }
-                }
-                return "";
-            }
+
 
 
         });
@@ -136,7 +124,7 @@
         <table>
             <tr>
                 <td>chip</td>
-                <td>color</td>
+                <td>color<br><p style="font-size: x-small">not all colors avaliable on all chips</p></td>
                 <td>time</td>
             </tr>
             <tr>
