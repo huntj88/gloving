@@ -8,6 +8,7 @@
     <script src="../utils/js/displayGloveSets.js"></script>
     <script src="../utils/js/getCookies.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/index.css">
+    <link rel="stylesheet" type="text/css" href="../utils/css/displayGloveSets.css">
 
     <script>
 
@@ -54,7 +55,7 @@
                     var htmlString = "";
                     htmlString += "<select id='colorDropDown' name='colorID' style='margin-top: 4px'>";
                     htmlString += "<option value='0'>all colors</option>";
-                    for (var z = 0; z < colors.length; z++) {
+                    for (var z = 1; z < colors.length; z++) {
                         htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
                     }
                     htmlString += "</select>";
@@ -143,7 +144,7 @@
     </form>
 </div>
 
-<div class="gloveSets" id="gloveSetsDiv"></div>
+<div class="gloveSets" id="gloveSetsDiv">undergoing hardcore modification at this very moment</div>
 
 </body>
 </html>

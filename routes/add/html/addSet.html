@@ -9,11 +9,15 @@
 
         var getChipsUrl = "./getAllAddedChips";
         var getPatternsUrl = "./getAllPatternsForChip";
+        var getMultiPatternsUrl = "./getAllMultiPatternsForChip";
         var getColorsUrl = "./getAllColorsForChip";
 
         var chipsG = [];
         var brightArray = ["","H","M","L"];
         var selectedChipIndexInArray = 0;
+
+        var patternHtml = "";
+        var colorHtml = "";
 
         $(document).ready(function () {
 
@@ -60,6 +64,7 @@
                                 htmlString+="<option value='"+patterns[z].patternID+"'>"+patterns[z].patternName+"</option>";
                             }
                             htmlString+="</select><br>";
+                            patternHtml = htmlString;
                             $("#patterns").html(htmlString);
 
                         },
@@ -88,6 +93,8 @@
                                 }
                             }
 
+                            checkMultiPattern(selectedChipIndexInArray);
+
                             console.log(chipsG[selectedChipIndexInArray].colorsPerMode);
                             var htmlString = "<table class='skinny' cellspacing='0' cellpadding='0'>";
                             htmlString+="<tr>";
@@ -95,7 +102,7 @@
 
 
                                 htmlString += "<td><select id='colorDropDown"+i+"' name='colorID' style='margin-top: 4px'>";
-                                htmlString += "<option value='0'>select color</option>";
+                                htmlString += "<option value='-1'>select color</option>";
                                 for (var z = 0; z < colors.length; z++) {
                                     htmlString += "<option style = 'background: #"+colors[z].hex+"' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
                                 }
@@ -114,6 +121,7 @@
                             }
 
                             htmlString+="</tr></table>";
+                            colorHtml = htmlString;
                             $("#colors").html(htmlString);
 
                         },
@@ -121,6 +129,48 @@
                             alert(errorThrown);
                         }
                     });
+                });
+            }
+
+
+            function checkMultiPattern(chipIndex)
+            {
+                if(chipsG[chipIndex].multiPattern==1)
+                {
+                    $.ajax({
+                        url: getMultiPatternsUrl,
+                        type: "POST",
+                        data: "chipID="+chipsG[chipIndex].chipID,
+                        success: function (multiPatterns) {
+
+                            console.log(multiPatterns);
+
+                            var htmlString = "<br><br>";
+                            htmlString+="<select id='multiPatternDropDown' name='multiPatternID' style='margin-top: 4px'>";
+                            htmlString+="<option value='-1'>select modifier</option>";
+                            for(var z = 0;z<multiPatterns.length;z++)
+                            {
+                                htmlString+="<option value='"+multiPatterns[z].multiPatternID+"'>"+multiPatterns[z].multiPatternName+"</option>";
+                            }
+                            htmlString+="</select>";
+
+                            htmlString+="<select name='multiPatternSensitivity'><option value='1'>high sensitivity</option><option value='2'>medium sensitivity</option><option value='3'>low sensitivity</option></select><br>";
+                            $("#multiPatternCheck").html(htmlString);
+                            multiPatternAdd();
+
+                        },
+                        error: function (jXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                }
+            }
+
+
+            function multiPatternAdd() {
+                $('#multiPatternDropDown').bind('change', function() {
+                    $("#patterns2").html(patternHtml);
+                    $("#colors2").html("<input type='hidden' name='colorID' value='0'>"+colorHtml);
                 });
             }
 
@@ -136,6 +186,9 @@
     <div id="chips"></div>
     <div id="patterns"></div>
     <div id="colors"></div>
+    <div id="multiPatternCheck"></div>
+    <div id="patterns2"></div>
+    <div id="colors2"></div>
     <input type="submit">
 </form>
 </body>

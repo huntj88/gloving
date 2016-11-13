@@ -18,7 +18,7 @@
                 type: "POST",
                 data: $(this).serialize(),
                 success: function (data) {
-                    for (var i = 0; i < data.length; i++){
+                    for (var i = 1; i < data.length; i++){
                         var obj = data[i];
                         availableColors.push(obj.colorName);
                         availableColorIDs.push(obj.colorID);
@@ -67,19 +67,6 @@
 
 
             });
-
-            /*$("#submit").click(function(){
-
-             var colorArray = [];
-             var ammount = $("#colorNum").val();
-
-             for(var i = 0; i<ammount;i++)
-             colorArray[i] = $("#"+i).val();
-
-             $.post("../add/addChip",{name: $("#name").val(), brightnessNum: $("#brightness").val(), color: colorArray}, function(data){
-             alert(data);
-             });
-             });*/
 
 
         });

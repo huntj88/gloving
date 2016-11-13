@@ -42,9 +42,11 @@ function loadAndDisplaySets(params) {
         data: params,
         success: function (data) {
 
-            htmlString = "<table>";
+            console.log(data);
 
-            htmlString += "<tr style='color:orange'><td>points</td><td>name</td><td>chip</td><td>author</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
+            htmlString = "<table class='viewSetsTable'>";
+
+            htmlString += "<tr style='color:orange'><td>points</td><td>name</td><td>chip</td><td>author</td><td>accelerometer</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
 
 
             for (var i = 0; i < data.length; i++) {
@@ -60,14 +62,42 @@ function loadAndDisplaySets(params) {
 
                 //
 
-                htmlString += "<td>" + data[i].patternName + "</td>";
+                var multipatternText = ["","high sensitivity", "medium sensitivity","low sensitivity"];
+
+                htmlString += "<td>"+data[i].multiPatternName+" "+multipatternText[data[i].multiPatternSensitivity]+"</td>";
+
+                var colorIDs = data[i].colorIDs.split(",");
+                console.log(colorIDs);
+                var multiPatternSplitIndexs = [];
+
+                for(var z = 0;z<colorIDs.length;z++)
+                {
+                    if(colorIDs[z]==0)
+                    {
+                        multiPatternSplitIndexs.push(z);
+                    }
+                }
+
+                console.log(multiPatternSplitIndexs);
+
+                var patternNames = data[i].patternNames.split(",");
+
+                if(multiPatternSplitIndexs.length==0)
+                    htmlString += "<td>" + patternNames[0] + "</td>";
+                else {
+                    htmlString += "<td><table><tr><td>" + patternNames[0] + "</td></tr><tr><td>" + patternNames[multiPatternSplitIndexs[0]] + "</td></tr></table></td>";
+                }
+
 
                 var hex = data[i].hexCodes.split(",");
                 var brightness = data[i].brightnessLevels.split(",");
                 var brightArray = ["", "H", "M", "L"];
                 htmlString += "<td><table><tr>";
                 for (var z = 0; z < hex.length; z++) {
-                    htmlString += "<td><div class='colorSqaure' style='background:#" + hex[z] + "'>" + brightArray[brightness[z]] + "</div></td>";
+                    if(z!=multiPatternSplitIndexs[0])
+                        htmlString += "<td><div class='colorSqaure' style='background:#" + hex[z] + "'>" + brightArray[brightness[z]] + "</div></td>";
+                    else
+                        htmlString += "</tr><tr>";
                 }
                 htmlString += "</tr></table></td>";
 
@@ -75,8 +105,12 @@ function loadAndDisplaySets(params) {
 
                 htmlString += "<td><table><tr>";
                 for (var z = 0; z < hex.length; z++) {
-                    htmlString += "<td style='color: #" + hex[z] + "'>" + colorNames[z] + "</td>";
-                    htmlString += "<td>|</td>";
+                    if(z!=multiPatternSplitIndexs[0]) {
+                        htmlString += "<td style='color: #" + hex[z] + "'>" + colorNames[z] + "</td>";
+                        htmlString += "<td>|</td>";
+                    }
+                    else
+                        htmlString += "</tr><tr>";
                 }
                 htmlString += "</tr></table></td>";
 
@@ -87,6 +121,8 @@ function loadAndDisplaySets(params) {
             htmlString += "</table>";
 
             $("#gloveSetsDiv").html(htmlString);
+
+            //$("tr:even").css("background-color", "#728aa0");
 
             //bindButton("pointButton1");
             for (i = 0; i < data.length; i++) {

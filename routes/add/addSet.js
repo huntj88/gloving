@@ -6,53 +6,120 @@ module.exports =
 
     addSet: function(req, res){
 
-        var queryString = "INSERT IGNORE INTO sets (userID,patternID,chipID,setName) VALUES (?,?,?,?)";
+        var queryString = "INSERT INTO sets (userID,chipID,multiPatternID,setName,multiPatternSensitivity) VALUES (?,?,?,?,?)";
 
         var mysqlPool = require("../../utils/mysqlPool");
+
+        var multiPatternID = 0;
+        if(req.body.multiPatternID!=undefined&&req.body.multiPatternID!=-1)
+        {
+            multiPatternID = req.body.multiPatternID;
+        }
+
+        var multiPatternSensitivity = 0;
+        if(req.body.multiPatternSensitivity!=undefined&&multiPatternID!=0)
+        {
+            multiPatternSensitivity = req.body.multiPatternSensitivity;
+        }
+
         mysqlPool.getConnection(function (err,connection) {
-            connection.query(queryString,[req.cookies.userID,req.body.patternID,req.body.chipID,req.body.setName],function (error,results,fields) {
-                if(error)
-                {
-                    console.log("Error is in addset");
-                    throw error;
+
+            connection.beginTransaction(function (err) {
+                if (err) {
+                    throw err;
                 }
-                else{
+                connection.query(queryString,[req.cookies.userID,req.body.chipID,multiPatternID,req.body.setName,multiPatternSensitivity], function (err, results) {
+                    if (err) {
+                        return connection.rollback(function () {
+                            console.log("error 1");
+                            throw err;
+                            if (err) {
+                                connection.release();
+                                res.send("fail");
+                            }
+                        });
+                    }
 
                     var setID = results.insertId;
 
-                    var colorAddQuery = "INSERT INTO setColors (setID,colorPosition,colorID,brightnessLevel) VALUES ";
-
-                    var lastIndex = 0;
-                    console.log(req.body.colorID.length);
-                    for(var i = 0;i<req.body.colorID.length;i++)
-                    {
-                        if(req.body.colorID[i]!=0)
-                            lastIndex = i;
-                    }
-                    console.log(lastIndex);
+                    var colorAddQuery = "INSERT INTO setColors (setID,colorPosition,colorID,patternID,brightnessLevel) VALUES ";
 
                     var params = "";
-                    for(var i=0;i<=lastIndex;i++)
+                    var count = 0;
+                    var patternPosition = 0;
+                    for(var i=0;i<=req.body.colorID.length;i++)
                     {
-                        params+="("+setID+","+i+","+req.body.colorID[i]+","+req.body.tint[i]+"),"
+                        if(req.body.colorID[i]!=-1&&req.body.colorID[i]!=undefined) {
+                            params += "(" + setID + "," + count + "," + req.body.colorID[i] + "," + req.body.patternID[patternPosition] + "," + req.body.tint[i] + "),"
+                            count++;
+
+                            if(req.body.colorID[i]==0)
+                            {
+                                patternPosition++;
+                            }
+                        }
                     }
 
                     params = params.substring(0, params.length-1);
 
-                    connection.query(colorAddQuery+params,[],function (error,results,fields) {
-                        if(error)
+                    //console.log(colorAddQuery+params);
+
+                    connection.query(colorAddQuery+params,[], function (err, results) {
+                        if (err) {
+                            return connection.rollback(function () {
+                                console.log("error 2");
+                                //throw err;
+                                if (err) {
+                                    connection.release();
+                                    res.send("fail");
+                                }
+                            });
+                        }
+
+                        /*var patternAddQuery = "INSERT INTO setPatterns (setID,patternPosition,patternID) VALUES ";
+
+                        var params = "";
+                        for(var i=0;i<=req.body.patternID.length;i++)
                         {
-                            console.log("Error is in addSet");
-                            throw error;
+                            if(req.body.patternID[i]!=undefined)
+                                params+="("+setID+","+i+","+req.body.patternID[i]+"),"
                         }
-                        else{
-                            console.log(params);
-                            res.redirect("../user/viewAccount");
-                            connection.release();
-                        }
+
+                        params = params.substring(0, params.length-1);
+                        console.log(patternAddQuery+params);
+
+                        connection.query(patternAddQuery+params,[], function (err, results) {
+                            if (err) {
+                                return connection.rollback(function () {
+                                    console.log("error 3");
+                                    //throw err;
+                                    if (err) {
+                                        connection.release();
+                                        console.log(err);
+                                        res.send("fail");
+                                    }
+                                });
+                            }*/
+
+                            connection.commit(function (err) {
+                                if (err) {
+                                    return connection.rollback(function () {
+                                        console.log("error 4");
+                                        throw err;
+                                    });
+                                }
+                                console.log('success!');
+                                connection.release();
+                                res.send("success");
+                            });
+
+                        //});
+
                     });
-                }
+
+                });
             });
+
         });
 
     },
@@ -104,6 +171,29 @@ module.exports =
 
         var queryString = "SELECT patternID,patternName FROM patternsOnChips join patterns USING(patternID) where chipID = ?";
 
+        var mysqlPool = require("../../utils/mysqlPool");
+        mysqlPool.getConnection(function (err,connection) {
+            connection.query(queryString,[req.body.chipID],function (error,results,fields) {
+                if(error)
+                {
+                    console.log("Error is in addset-getAllAddedPaterns");
+                    throw error;
+                }
+                else{
+
+                    //res.send("done");
+                    res.send(results);
+                    connection.release();
+                }
+            });
+        });
+    },
+
+
+    getAllMultiPatternsForChip: function (req,res) {
+        var queryString = "SELECT multiPatternID,multiPatternName FROM multiPatternsOnChip join multiPatternModifiers USING(multiPatternID) where chipID = ?";
+
+        console.log(req.body);
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err,connection) {
             connection.query(queryString,[req.body.chipID],function (error,results,fields) {

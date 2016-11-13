@@ -56,7 +56,7 @@ module.exports =
             userID=0;
 
 
-        var queryString = "SELECT setID, userID, username, patternID, patternName, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns USING(patternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";
+        var queryString = "SELECT setID, userID, username, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, multiPatternName, multiPatternSensitivity,GROUP_CONCAT(setColors.patternID order by colorPosition) as patternIDs, GROUP_CONCAT(patternName order by colorPosition) as patternNames, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns on setColors.patternID = patterns.patternID join multiPatternModifiers USING(multiPatternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";
 
 
         if(req.body.timeID==1) //all time
@@ -71,6 +71,8 @@ module.exports =
             queryString+=" and UNIX_TIMESTAMP(now())-604800 < unixTimeCreated group by sets.setID order by setPoints desc";
         }
 
+        console.log(queryString);
+
         mysqlPool.getConnection(function (err, connection) {
             connection.query(queryString, [userID],
                 function (error, results, fields) {
@@ -79,7 +81,7 @@ module.exports =
                         throw error;
                     } else {
 
-                        console.log(queryString);
+
                         res.send(results);
                     }
                     connection.release();

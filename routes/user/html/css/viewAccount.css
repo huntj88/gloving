@@ -3,7 +3,6 @@ p {
     padding: 0;
 }
 
-
 div.content{
     width:1200px;
     margin-right: auto;
@@ -22,9 +21,4 @@ div.sort {
     background: #cdc25e;
     position: absolute;
     bottom: 0;
-}
-
-div.gloveSets{
-    width: 100%;
-    background: #7a7a7a;
 }

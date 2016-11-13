@@ -62,6 +62,11 @@ router.post('/getAllPatternsForChip', function (req, res, next) {
     request.getAllPatternsForChip(req, res);
 });
 
+router.post('/getAllMultiPatternsForChip', function (req, res, next) {
+    var request = require('./addSet');
+    request.getAllMultiPatternsForChip(req, res);
+});
+
 router.post('/getAllAddedPatterns', function (req, res, next) {
     var request = require('./addSet');
     request.getAllAddedPatterns(req, res);
