@@ -16,15 +16,24 @@
             var urlParam = getUrlParameter("userID");
             var paramList = "";
             if(urlParam==undefined) {
-                paramList += "userID=" + getCookie("userID");
-                paramList += "&timeID=2";
-                loadAndDisplaySets(paramList);
-                $("#top").html("<p style='font-size: 40px'>"+getCookie("username")+"</p>");
+                paramList += "userID=" + getCookie("userID")+"&timeID=2";
+                loadAndDisplaySets(paramList+"&accountSortSelect=0");
+                $("#username").html(getCookie("username"));
             }
             else {
-                loadAndDisplaySets("userID=" + getUrlParameter("userID") + "&timeID=2");
-                $("#top").html("<p style='font-size: 40px'>"+getUrlParameter("username")+"</p>");
+                paramList+="userID=" + getUrlParameter("userID") + "&timeID=2";
+                loadAndDisplaySets(paramList+"&accountSortSelect=0");
+                $("#username").html(getUrlParameter("username"));
             }
+
+            $('#viewAccountSortForm').on('submit', function (e) {
+
+                e.preventDefault();
+                //console.log($(this).serialize());
+                loadAndDisplaySets(paramList+"&"+$(this).serialize());
+                //loadAndDisplaySets($(this).serialize())
+
+            });
 
 
         });
@@ -35,6 +44,16 @@
 <body>
 <div class="content">
     <div class="top" id="top">
+        <p id="username" style="font-size: 40px"></p>
+        <div class="sort">
+            <form id="viewAccountSortForm">
+                <select name="accountSortSelect">
+                    <option value="0">created</option>
+                    <option value="1">liked</option>
+                </select>
+                <input type="submit">
+            </form>
+        </div>
     </div>
     <div class="gloveSets" id="gloveSetsDiv">
         dfs

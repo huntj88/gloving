@@ -9,6 +9,12 @@ router.get('/', function(req, res, next) {
 
 });
 
+/*router.get('/phpmyadmin', function(req, res, next) {
+    //res.render('index', { title: 'Express' });
+    res.send("<script>location.href = 'http://138.68.41.247:3000/phpmyadmin';</script>");
+
+});*/
+
 router.get('/js/:resource', function(req, res, next) {
     res.sendFile(path.join(__dirname+'/html/js/'+req.params.resource));
 });

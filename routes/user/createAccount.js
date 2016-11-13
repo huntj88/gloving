@@ -25,7 +25,7 @@ module.exports =
                         res.cookie('userID', results.insertId);
                         res.cookie('apiKey', hash.substring(35));
                         res.cookie('username', req.body.username);
-                        res.send("yay!");
+                        res.send("<script>location.href = '../../';</script>");
                     }
                 });
             });

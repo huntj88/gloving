@@ -1,3 +1,9 @@
+p {
+    margin: 0;
+    padding: 0;
+}
+
+
 div.content{
     width:1200px;
     margin-right: auto;
@@ -8,6 +14,14 @@ div.top{
     width:100%;
     background: yellowgreen;
     height: 150px;
+    position: relative;
+}
+
+div.sort {
+    width:100%;
+    background: #cdc25e;
+    position: absolute;
+    bottom: 0;
 }
 
 div.gloveSets{

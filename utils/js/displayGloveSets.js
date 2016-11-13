@@ -56,7 +56,7 @@ function loadAndDisplaySets(params) {
                     htmlString += "<td><button style='background-color: orange' id='pointButton"+i+"'>" + data[i].setPoints + "</button></td>";
                 htmlString += "<td>" + data[i].setName + "</td>";
                 htmlString += "<td>" + data[i].chipName + "</td>";
-                htmlString += "<td>" + "<form action='./user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+data[i].userID+"' /><input type='hidden' name='username' value='"+data[i].username+"' /><a href='#' onclick='this.parentNode.submit()'>"+data[i].username+"</a></form>" + "</td>";
+                htmlString += "<td>" + "<form action='../user/viewAccount' method='POST'><input type='hidden' name='userID' value='"+data[i].userID+"' /><input type='hidden' name='username' value='"+data[i].username+"' /><a href='#' onclick='this.parentNode.submit()'>"+data[i].username+"</a></form>" + "</td>";
 
                 //
 

@@ -33,11 +33,17 @@ module.exports =
             {
                 whereClause+=" AND ";
             }
+
             whereClause+="userID="+req.body.userID;
             needsAnd = true;
         }
 
         var subquery = "SELECT distinct setID FROM sets join setColors using(setID)";
+
+        if(req.body.accountSortSelect==1)
+        {
+            subquery = "select distinct setID from pointsGiven"
+        }
 
 
         if(needsAnd)
@@ -73,7 +79,7 @@ module.exports =
                         throw error;
                     } else {
 
-                        //console.log(queryString);
+                        console.log(queryString);
                         res.send(results);
                     }
                     connection.release();
