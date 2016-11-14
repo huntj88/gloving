@@ -9,6 +9,8 @@
 
         var availableColors = [];
         var availableColorIDs = [];
+        var availablePatterns = [];
+        var availableMultiPatterns = [];
         var duplicate = "";
         $(document).ready(function () {
 
@@ -25,13 +27,45 @@
                     }
                 },
                 error: function (jXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
+                    alert(errorThrown+"  1");
+                }
+            });
+
+
+            $.ajax({
+                url: "./getAllAddedPatterns",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (data) {
+                    availablePatterns = data;
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown+"  2");
+                }
+            });
+
+
+            $.ajax({
+                url: "./getAllAddedMultiPatterns",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (data) {
+                    availableMultiPatterns = data;
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown+"  3");
                 }
             });
 
             $('form').on('keyup change', 'input', function () {
                 if ($(this).attr('id') == "colorNumTotal") {
                     fillColorAmount($("#colorNumTotal").val());
+                } else if($(this).attr('id') == "numPatterns"){
+                    //console.log($("#colorNumTotal").val());
+                    fillPatternAmount($("#numPatterns").val());
+                } else if($(this).attr('id') == "numMultiPatterns"){
+                    //console.log($("#colorNumTotal").val());
+                    fillMultiPatternAmount($("#numMultiPatterns").val());
                 }
             });
 
@@ -55,7 +89,7 @@
 
                         },
                         error: function (jXHR, textStatus, errorThrown) {
-                            alert(errorThrown);
+                            //alert(errorThrown+"  4");
                         }
                     });
                 }
@@ -90,6 +124,40 @@
             }
 
             document.getElementById("colors").innerHTML = htmlString + "<br>";
+        }
+
+        function fillPatternAmount(num) {
+
+            var htmlString = "<br>type all the different patterns<br>";
+
+            for(var i = 0;i<num;i++)
+            {
+                htmlString+=(i+1)+". <select name='pattern' style='margin-top: 4px'>";
+                for(var z = 0;z<availablePatterns.length;z++)
+                {
+                    htmlString+="<option value="+availablePatterns[z].patternID+">"+availablePatterns[z].patternName+"</option>";
+                }
+                htmlString+="</select><br>";
+            }
+
+            document.getElementById("patterns").innerHTML = htmlString + "<br>";
+        }
+
+        function fillMultiPatternAmount(num) {
+
+            var htmlString = "<br>type all the different Multi patterns<br>";
+
+            for(var i = 0;i<num;i++)
+            {
+                htmlString+=(i+1)+". <select name='multiPattern' style='margin-top: 4px'>";
+                for(var z = 0;z<availableMultiPatterns.length;z++)
+                {
+                    htmlString+="<option value="+availableMultiPatterns[z].multiPatternID+">"+availableMultiPatterns[z].multiPatternName+"</option>";
+                }
+                htmlString+="</select><br>";
+            }
+
+            document.getElementById("multiPatterns").innerHTML = htmlString + "<br>";
         }
 
 
@@ -129,12 +197,18 @@
             <td><input type="number" name="numPatterns" id="numPatterns"></td>
         </tr>
         <tr>
+            <td>number of multiPatterns:</td>
+            <td><input type="number" name="numMultiPatterns" id="numMultiPatterns"></td>
+        </tr>
+        <tr>
             <td>num brightness levels:</td>
             <td><input type="number" name="brightnessNum" id="brightness"></td>
         </tr>
 
     </table>
 
+    <div id="multiPatterns"></div>
+    <div id="patterns"></div>
     <div id="colors"></div>
 
     <input type="submit">

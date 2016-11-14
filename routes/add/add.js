@@ -72,6 +72,11 @@ router.post('/getAllAddedPatterns', function (req, res, next) {
     request.getAllAddedPatterns(req, res);
 });
 
+router.post('/getAllAddedMultiPatterns', function (req, res, next) {
+    var request = require('./addSet');
+    request.getAllAddedMultiPatterns(req, res);
+});
+
 
 router.post('/givePoint', function (req, res, next) {
     var request = require('./points');
