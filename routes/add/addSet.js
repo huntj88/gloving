@@ -81,7 +81,8 @@ module.exports =
                             }
                             console.log('success!');
                             connection.release();
-                            res.send("success");
+                            //res.send("success");
+                            res.send("<script>location.href = '../../user/viewAccount';</script>");
                         });
 
 

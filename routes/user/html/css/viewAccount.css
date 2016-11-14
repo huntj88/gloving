@@ -1,4 +1,4 @@
-p {
+p,html,body {
     margin: 0;
     padding: 0;
 }
@@ -18,7 +18,7 @@ div.top{
 
 div.sort {
     width:100%;
-    background: #cdc25e;
+    background: #cd887b;
     position: absolute;
     bottom: 0;
 }
