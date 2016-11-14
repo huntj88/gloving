@@ -85,7 +85,7 @@ function loadAndDisplaySets(params) {
                 if(multiPatternSplitIndexs.length==0)
                     htmlString += "<td>" + patternNames[0] + "</td>";
                 else {
-                    htmlString += "<td><table><tr><td>" + patternNames[0] + "</td></tr><tr><td>" + patternNames[multiPatternSplitIndexs[0]] + "</td></tr></table></td>";
+                    htmlString += "<td><table><tr><td>" + patternNames[0] + "</td></tr><tr><td>" + patternNames[multiPatternSplitIndexs[0]+1] + "</td></tr></table></td>";
                 }
 
 

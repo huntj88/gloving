@@ -81,7 +81,7 @@
 
             for(var i = 0;i<num;i++)
             {
-                htmlString+="<select id='" + i + "' name='color' style='margin-top: 4px'>";
+                htmlString+=(i+1)+". <select id='" + i + "' name='color' style='margin-top: 4px'>";
                 for(var z = 0;z<availableColors.length;z++)
                 {
                     htmlString+="<option value="+availableColorIDs[z]+">"+availableColors[z]+"</option>";
