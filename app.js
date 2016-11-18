@@ -36,7 +36,7 @@ app.use('/utils',utils);
 
 function checkIfUserLegit(req, res, next) {
     console.log(req.url);
-    if (req.body.api_key == "dev123") {
+    if (req.body.apiKey == "dev123") {
         console.log("dev api_key in use. are you sure its testing only?");
         next();
     }
