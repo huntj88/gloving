@@ -82,8 +82,10 @@
                 document.getElementById('colors').appendChild(amount);
 
                 for (var i = 0; i < num; i++) {
+
                     var colorName = document.createElement('INPUT');
                     colorName.type = 'text';
+                    colorName.value = (i+1);
                     colorName.name = "colorName";
                     document.getElementById('colors').appendChild(colorName);
 

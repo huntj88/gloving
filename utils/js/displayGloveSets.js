@@ -92,7 +92,7 @@ function loadAndDisplaySets(params) {
                 var hex = data[i].hexCodes.split(",");
                 var brightness = data[i].brightnessLevels.split(",");
                 var brightArray = ["", "H", "M", "L"];
-                htmlString += "<td><table><tr>";
+                htmlString += "<td><table class='viewSetsInnerColorTable'><tr>";
                 for (var z = 0; z < hex.length; z++) {
                     if(z!=multiPatternSplitIndexs[0])
                         htmlString += "<td><div class='colorSqaure' style='background:#" + hex[z] + "'>" + brightArray[brightness[z]] + "</div></td>";
@@ -103,7 +103,7 @@ function loadAndDisplaySets(params) {
 
                 var colorNames = data[i].colorNames.split(",");
 
-                htmlString += "<td><table><tr>";
+                htmlString += "<td><table class='viewSetsInnerColorNameTable'><tr>";
                 for (var z = 0; z < hex.length; z++) {
                     if(z!=multiPatternSplitIndexs[0]) {
                         htmlString += "<td style='color: #" + hex[z] + "'>" + colorNames[z] + "</td>";
