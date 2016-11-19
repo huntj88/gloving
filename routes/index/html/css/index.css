@@ -4,7 +4,6 @@ html,div,p,body {
 }
 
 div.header {
-    width: 1200px;
     height: 80px;
     margin-left: auto;
     margin-right: auto;
@@ -23,14 +22,12 @@ div.rightHeader{
 }
 
 div.regularSort {
-    width: 1200px;
     margin-right: auto;
     margin-left: auto;
     background: #ff9487;
 }
 
 div.menuBar{
-    width: 1200px;
     margin-right: auto;
     margin-left: auto;
     background: #fff698;

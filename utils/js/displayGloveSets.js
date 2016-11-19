@@ -1,5 +1,4 @@
 function bindButton(i,setID) {
-    console.log(i);
     var button = $("#"+i);
    button.bind("click", function(){
         if(button.css("background-color")!="rgb(255, 165, 0)") {
@@ -9,7 +8,6 @@ function bindButton(i,setID) {
                 type: "POST",
                 data: "setID="+setID,
                 success: function (point) {
-                    console.log(point);
                     if(point=="success") {
                         button.text(parseInt(button.text()) + 1);
                         button.css("background-color", "orange");
@@ -35,6 +33,52 @@ function bindButton(i,setID) {
 }
 
 
+function bindSeeColorButton(i,set) {
+    var button = $("#"+i);
+    button.bind("click", function(){
+        console.log(set);
+
+        var backdrop = $("#backdrop");
+        backdrop.show();
+
+        var colorNames = set.colorNames.split(",");
+        var hex = set.hexCodes.split(",");
+
+        console.log(colorNames);
+
+        var htmlStringPopup = "";
+        htmlStringPopup += "<table class='viewSetsInnerColorNameTable'><tr>";
+        for (var z = 0; z < hex.length; z++) {
+            if(z!=set.multiPatternSplitIndexs||z==0) {
+                console.log(z);
+                htmlStringPopup += "<td style='color: #" + hex[z] + "'>" + colorNames[z] + "</td>";
+                htmlStringPopup += "<td style='color:white'>|</td>";
+            }
+            else
+                htmlStringPopup += "</tr><tr>";
+        }
+        htmlStringPopup += "</tr></table>";
+
+        var popup = $("#popup");
+        popup.html(htmlStringPopup);
+        popup.show();
+
+        popup.bind("click", function(){
+            popup.hide();
+            backdrop.hide();
+        });
+
+        backdrop.bind("click", function(){
+            popup.hide();
+            backdrop.hide();
+        });
+
+
+
+    });
+}
+
+
 function loadAndDisplaySets(params) {
     $.ajax({
         url: "../sort/sortIndex",
@@ -42,16 +86,13 @@ function loadAndDisplaySets(params) {
         data: params,
         success: function (data) {
 
-            console.log(data);
-
             htmlString = "<table class='viewSetsTable'>";
 
-            htmlString += "<tr style='color:orange'><td>points</td><td>name</td><td>chip</td><td>author</td><td>accelerometer</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
+            htmlString += "<tr style='color:orange'><td>&nbsp;</td><td>points</td><td>name</td><td>chip</td><td>author</td><td>accelerometer</td><td>pattern</td><td>preview</td><td>color names</td></tr>"
 
 
             for (var i = 0; i < data.length; i++) {
-                htmlString += "<tr>";
-                console.log(data[i].pointed);
+                htmlString += "<tr><td>&nbsp;</td>";
                 if(data[i].pointed==null)
                     htmlString += "<td><button id='pointButton"+i+"'>" + data[i].setPoints + "</button></td>";
                 else
@@ -67,7 +108,6 @@ function loadAndDisplaySets(params) {
                 htmlString += "<td>"+data[i].multiPatternName+" "+multipatternText[data[i].multiPatternSensitivity]+"</td>";
 
                 var colorIDs = data[i].colorIDs.split(",");
-                console.log(colorIDs);
                 var multiPatternSplitIndexs = [];
 
                 for(var z = 0;z<colorIDs.length;z++)
@@ -78,7 +118,8 @@ function loadAndDisplaySets(params) {
                     }
                 }
 
-                console.log(multiPatternSplitIndexs);
+                data[i].multiPatternSplitIndexs = multiPatternSplitIndexs;
+
 
                 var patternNames = data[i].patternNames.split(",");
 
@@ -101,9 +142,11 @@ function loadAndDisplaySets(params) {
                 }
                 htmlString += "</tr></table></td>";
 
-                var colorNames = data[i].colorNames.split(",");
+                htmlString += "<td><button value='"+i+"' id='viewColors"+i+"'>view colors</button></td>";
 
-                htmlString += "<td><table class='viewSetsInnerColorNameTable'><tr>";
+
+
+                /*htmlString += "<td><table class='viewSetsInnerColorNameTable'><tr>";
                 for (var z = 0; z < hex.length; z++) {
                     if(z!=multiPatternSplitIndexs[0]) {
                         htmlString += "<td style='color: #" + hex[z] + "'>" + colorNames[z] + "</td>";
@@ -112,13 +155,15 @@ function loadAndDisplaySets(params) {
                     else
                         htmlString += "</tr><tr>";
                 }
-                htmlString += "</tr></table></td>";
+                htmlString += "</tr></table></td>";*/
 
 
                 htmlString += "</tr>";
             }
 
             htmlString += "</table>";
+            htmlString += "<div id='backdrop' class='darkBackground'>test</div>";
+            htmlString += "<div id='popup' class='setPopup'>test</div>";
 
             $("#gloveSetsDiv").html(htmlString);
 
@@ -129,6 +174,7 @@ function loadAndDisplaySets(params) {
 
                 (function (i) {
                     bindButton("pointButton"+i,data[i].setID);
+                    bindSeeColorButton("viewColors"+i,data[i]);
                 }(i));
 
 
