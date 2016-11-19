@@ -31,7 +31,7 @@
                 success: function (chips) {
                     chipsG = chips;
                     var htmlString = "";
-                    htmlString += "<select id='chipDropDown' name='chipID' style='margin-top: 4px'>";
+                    htmlString += "<select id='chipDropDown' name='chipID'>";
                     htmlString += "<option value='0'>all chips</option>";
                     for (var z = 0; z < chips.length; z++) {
                         console.log(chips[z]);
@@ -53,7 +53,7 @@
                 success: function (colors) {
                     //chipsG = chips;
                     var htmlString = "";
-                    htmlString += "<select id='colorDropDown' name='colorGroupID' style='margin-top: 4px'>";
+                    htmlString += "<select id='colorDropDown' name='colorGroupID'>";
                     htmlString += "<option value='0'>all colors</option>";
                     for (var z = 0; z < colors.length; z++) {
                         htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorGroupID + "'>" + colors[z].colorGroupName + "</option>";
