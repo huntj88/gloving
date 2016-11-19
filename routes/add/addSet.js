@@ -45,10 +45,17 @@ module.exports =
                     var params = "";
                     var count = 0;
                     var patternPosition = 0;
+
                     for (var i = 0; i <= req.body.colorID.length; i++) {
                         if (req.body.colorID[i] != -1 && req.body.colorID[i] != undefined) {
-                            params += "(" + setID + "," + count + "," + req.body.colorID[i] + "," + req.body.patternID[patternPosition] + "," + req.body.tint[i] + "),"
+                            if ( req.body.patternID instanceof Array ) {
+                                params += "(" + setID + "," + count + "," + req.body.colorID[i] + "," + req.body.patternID[patternPosition] + "," + req.body.tint[i] + "),";
+                            }
+                            else {
+                                params += "(" + setID + "," + count + "," + req.body.colorID[i] + "," + req.body.patternID + "," + req.body.tint[i] + "),";
+                            }
                             count++;
+
 
                             if (req.body.colorID[i] == 0) {
                                 patternPosition++;

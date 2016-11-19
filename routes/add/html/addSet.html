@@ -93,6 +93,8 @@
                                 }
                             }
 
+                            $("#notes").html(chipsG[selectedChipIndexInArray].notes);
+
                             checkMultiPattern(selectedChipIndexInArray);
 
                             console.log(chipsG[selectedChipIndexInArray].colorsPerMode);
@@ -184,6 +186,7 @@
 <form method="post" action="../add/addSet">
     <input type="text" placeholder="name of set" name="setName">
     <div id="chips"></div>
+    <div id="notes"></div>
     <div id="patterns"></div>
     <div id="colors"></div>
     <div id="multiPatternCheck"></div>
