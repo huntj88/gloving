@@ -19,5 +19,14 @@ div.colorSqaure{
 }
 
 .viewSetsTable>tbody>tr:nth-child(even) {
-    background-color: #728aa0;
+    background-color: #979a95;
+}
+
+.viewSetsInnerColorTable>tbody>tr>td {
+    text-shadow: white 0px 0px 10px;
+}
+
+.viewSetsInnerColorNameTable>tbody>tr>td {
+    font-weight: bold;
+    font-size: 18px;
 }

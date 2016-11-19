@@ -14,7 +14,7 @@
 
         var getChipsUrl = "./add/getAllAddedChips";
         var getPatternsUrl = "./add/getAllPatternsForChip";
-        var getColorsUrl = "./add/getAllAddedColors";
+        var getColorsUrl = "./add/getAllAddedColorGroups";
 
         var chipsG = [];
         var selectedChipIndexInArray = 0;
@@ -22,7 +22,7 @@
         $(document).ready(function () {
             logInFormOrLoggedIn();
 
-            loadAndDisplaySets("chipID=0&colorID=0&timeID=0");
+            loadAndDisplaySets("chipID=0&colorGroupID=0&timeID=0");
 
             $.ajax({
                 url: getChipsUrl,
@@ -53,10 +53,10 @@
                 success: function (colors) {
                     //chipsG = chips;
                     var htmlString = "";
-                    htmlString += "<select id='colorDropDown' name='colorID' style='margin-top: 4px'>";
+                    htmlString += "<select id='colorDropDown' name='colorGroupID' style='margin-top: 4px'>";
                     htmlString += "<option value='0'>all colors</option>";
-                    for (var z = 1; z < colors.length; z++) {
-                        htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
+                    for (var z = 0; z < colors.length; z++) {
+                        htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorGroupID + "'>" + colors[z].colorGroupName + "</option>";
                     }
                     htmlString += "</select>";
                     $("#colorTD").html(htmlString);
@@ -125,7 +125,7 @@
         <table>
             <tr>
                 <td>chip</td>
-                <td>color<br><p style="font-size: x-small">not all colors avaliable on all chips</p></td>
+                <td>color</td>
                 <td>time</td>
             </tr>
             <tr>

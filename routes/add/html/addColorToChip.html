@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../add/js/jscolor.min.js"></script>
+    <script>
+
+
+        var chipsG = [];
+        var selectedChipIndexInArray = 0;
+        var colorGroups =[];
+
+        $(document).ready(function () {
+
+            $.ajax({
+                url: "./getAllAddedChips",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (chips) {
+                    chipsG = chips;
+                    var htmlString = "";
+                    htmlString += "<select id='chipDropDown' name='chipID' style='margin-top: 4px'>";
+                    htmlString += "<option value='0'>all chips</option>";
+                    for (var z = 0; z < chips.length; z++) {
+                        console.log(chips[z]);
+                        htmlString += "<option value='" + chips[z].chipID + "'>" + chips[z].chipName + "</option>";
+                    }
+                    htmlString += "</select>";
+                    console.log(htmlString);
+                    $("#chips").html(htmlString);
+                    addColors();
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+
+            $.ajax({
+                url: "./getAllAddedColorGroups",
+                type: "POST",
+                data: "",
+                success: function (groups) {
+                    colorGroups = groups;
+                },
+                error: function (jXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+
+
+            function addColors() {
+                $('#chipDropDown').bind('change', function () {
+
+                    for (var find = 0; find < chipsG.length; find++) {
+                        if (chipsG[find].chipID == $(this).val()) {
+                            selectedChipIndexInArray = find;
+                            find = chipsG.length;
+                        }
+                    }
+
+                    add(chipsG[selectedChipIndexInArray].numColors, $(this).val());
+
+                });
+            }
+
+
+            function add(num, chipID) {
+
+                var chip = document.createElement('INPUT');
+                chip.name = "chipID";
+                chip.type = 'hidden';
+                chip.value = chipID;
+                document.getElementById('colors').appendChild(chip);
+
+                var amount = document.createElement('INPUT');
+                amount.name = "colorNumTotal";
+                amount.type = 'hidden';
+                amount.value = num;
+                document.getElementById('colors').appendChild(amount);
+
+                for (var i = 0; i < num; i++) {
+
+                    var colorName = document.createElement('INPUT');
+                    colorName.type = 'text';
+                    colorName.value = (i+1);
+                    colorName.name = "colorName";
+                    document.getElementById('colors').appendChild(colorName);
+
+
+                    var input = document.createElement('INPUT');
+                    input.name = "hex";
+                    var picker = new jscolor(input);
+                    document.getElementById('colors').appendChild(input);
+
+                    var select = document.createElement('SELECT');
+                    select.id = i;
+                    select.name = "colorGroup";
+                    document.getElementById('colors').appendChild(select);
+
+                    var breakLn = document.createElement('BR');
+                    document.getElementById('colors').appendChild(breakLn);
+                }
+
+                var submit = document.createElement('INPUT');
+                submit.type = 'submit';
+                document.getElementById('colors').appendChild(submit);
+                addColorGroups(num);
+            }
+
+            function addColorGroups(num) {
+                for (var i = 0; i < num; i++) {
+                    var htmlString = "";
+                    for(var x = 0;x<colorGroups.length;x++)
+                    {
+                        htmlString += "<option style='background-color: #"+colorGroups[x].hex+"' value='"+colorGroups[x].colorGroupID+"'>"+colorGroups[x].colorGroupName+"</option>";
+                    }
+                    $("#"+i).html(htmlString);
+                }
+            }
+
+        });
+
+    </script>
+</head>
+<body>
+<div id="chips"></div>
+<div>
+    <form id="colors" method="post" action="../add/addColorToChip">
+
+    </form>
+</div>
+</body>
+</html>

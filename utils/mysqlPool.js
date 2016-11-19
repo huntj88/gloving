@@ -6,7 +6,7 @@ var pool  = mysql.createPool({
     host     : 'localhost',
     user     : 'gloving',
     password : 'eVekBqKOwLxLZn9i',
-    database : 'gloving'
+    database : 'gloving2'
 });
 
 module.exports =
