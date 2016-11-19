@@ -15,7 +15,7 @@
         $(document).ready(function () {
 
 
-            $.ajax({
+            /*$.ajax({
                 url: "./getAllAddedColors",
                 type: "POST",
                 data: $(this).serialize(),
@@ -29,7 +29,7 @@
                 error: function (jXHR, textStatus, errorThrown) {
                     alert(errorThrown+"  1");
                 }
-            });
+            });*/
 
 
             $.ajax({
@@ -59,7 +59,7 @@
 
             $('form').on('keyup change', 'input', function () {
                 if ($(this).attr('id') == "colorNumTotal") {
-                    fillColorAmount($("#colorNumTotal").val());
+                    //fillColorAmount($("#colorNumTotal").val());
                 } else if($(this).attr('id') == "numPatterns"){
                     //console.log($("#colorNumTotal").val());
                     fillPatternAmount($("#numPatterns").val());
@@ -79,25 +79,25 @@
                 for(var i = 0; i<ammount;i++)
                     colorArray[i] = $("#"+i).val();
 
-                if(!hasDuplicates(colorArray))
-                {
+                //if(!hasDuplicates(colorArray))
+                //{
                     $.ajax({
                         url: window.location.pathname,
                         type: "POST",
                         data: $(this).serialize(),
                         success: function (data) {
-
+                            window.location.replace("/addColorToChip");
                         },
                         error: function (jXHR, textStatus, errorThrown) {
                             //alert(errorThrown+"  4");
                         }
                     });
-                }
+                /*}
                 else{
                     e.preventDefault();
                     var index = availableColorIDs.indexOf(parseInt(duplicate));
                     alert("contains duplicate color: "+availableColors[index]);
-                }
+                }*/
 
 
             });

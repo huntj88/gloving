@@ -22,13 +22,14 @@ router.post('/addChip', function (req, res, next) {
 });
 
 
-router.get('/addColor', function(req, res, next) {
-    res.sendFile(path.join(__dirname+'/html/addColor.html'));
+router.get('/addColorToChip', function(req, res, next) {
+    res.sendFile(path.join(__dirname+'/html/addColorToChip.html'));
 });
 
-router.post('/addColor', function (req, res, next) {
+
+router.post('/addColorToChip', function (req, res, next) {
     var request = require('./addColor');
-    request.addColor(req, res,path);
+    request.addColorToChip(req, res,path);
 });
 
 router.post('/getAllColorsForChip', function (req, res, next) {
@@ -36,10 +37,10 @@ router.post('/getAllColorsForChip', function (req, res, next) {
     request.getAllColorsForChip(req, res);
 });
 
-router.post('/getAllAddedColors', function (req, res, next) {
+/*router.post('/getAllAddedColors', function (req, res, next) {
     var request = require('./addColor');
     request.getAllAddedColors(req, res);
-});
+});*/
 
 
 router.get('/addSet', function(req, res, next) {
@@ -75,6 +76,11 @@ router.post('/getAllAddedPatterns', function (req, res, next) {
 router.post('/getAllAddedMultiPatterns', function (req, res, next) {
     var request = require('./addSet');
     request.getAllAddedMultiPatterns(req, res);
+});
+
+router.post('/getAllAddedColorGroups', function (req, res, next) {
+    var request = require('./addColor');
+    request.getAllAddedColorGroups(req,res);
 });
 
 

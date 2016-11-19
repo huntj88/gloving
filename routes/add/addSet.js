@@ -117,7 +117,7 @@ module.exports =
 
     getAllColorsForChip: function (req, res) {
 
-        var queryString = "select colorID, colorName, hex from colors join colorsOnChip using(colorID) where chipID = ?";
+        var queryString = "select colorID, colorName, hex from colorsOnChip where chipID = ?";
 
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err, connection) {

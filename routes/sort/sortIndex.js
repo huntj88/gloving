@@ -13,17 +13,17 @@ module.exports =
         var colorSort = false;
         if(req.body.chipID!=undefined&&req.body.chipID!=0)
         {
-            whereClause+="chipID="+req.body.chipID;
+            whereClause+="sets.chipID="+req.body.chipID;
             needsAnd = true;
         }
 
-        if(req.body.colorID!=undefined&&req.body.colorID!=0)
+        if(req.body.colorGroupID!=undefined&&req.body.colorGroupID!=0)
         {
             if(needsAnd==true)
             {
                 whereClause+=" AND ";
             }
-            whereClause+="colorID="+req.body.colorID;
+            whereClause+="colorGroupID="+req.body.colorGroupID;
             needsAnd = true;
         }
 
@@ -38,7 +38,7 @@ module.exports =
             needsAnd = true;
         }
 
-        var subquery = "SELECT distinct setID FROM sets join setColors using(setID)";
+        var subquery = "SELECT distinct setID FROM sets join setColors using(setID) join colorsOnChip USING(colorID)";
 
         if(req.body.accountSortSelect==1)
         {
@@ -56,7 +56,10 @@ module.exports =
             userID=0;
 
 
-        var queryString = "SELECT setID, userID, username, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, multiPatternName, multiPatternSensitivity,GROUP_CONCAT(setColors.patternID order by colorPosition) as patternIDs, GROUP_CONCAT(patternName order by colorPosition) as patternNames, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns on setColors.patternID = patterns.patternID join multiPatternModifiers USING(multiPatternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";
+        /*var queryString = "SELECT setID, userID, username, chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, multiPatternName, multiPatternSensitivity,GROUP_CONCAT(setColors.patternID order by colorPosition) as patternIDs, GROUP_CONCAT(patternName order by colorPosition) as patternNames, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels from sets join setColors using(setID) join colors USING(colorID) join chips using(chipID) join users USING(userID) join patterns on setColors.patternID = patterns.patternID join multiPatternModifiers USING(multiPatternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";*/
+
+
+         var queryString = "SELECT setID, userID, username, sets.chipID, chipName, setName, setPoints,points.setID as pointed, unixTimeCreated, multiPatternName, multiPatternSensitivity, GROUP_CONCAT(colorPosition order by colorPosition) as colorPositions, GROUP_CONCAT(setColors.colorID order by colorPosition) as colorIDs, GROUP_CONCAT(colorName order by colorPosition) as colorNames, GROUP_CONCAT(hex order by colorPosition) as hexCodes, GROUP_CONCAT(brightnessLevel order by colorPosition) as brightnessLevels, GROUP_CONCAT(patternID order by colorPosition) as patternIDs, GROUP_CONCAT(patternName order by colorPosition) as patternNames FROM sets join setColors using(setID) join patterns USING(patternID) join users USING(userID) join chips USING(chipID) join colorsOnChip USING(colorID) join multiPatternModifiers USING(multiPatternID) left join (select setID from pointsGiven where userID = ?)points USING(setID) where setID in ("+subquery+")";
 
 
         if(req.body.timeID==1) //all time
@@ -72,6 +75,7 @@ module.exports =
         }
 
         console.log(queryString);
+
 
         mysqlPool.getConnection(function (err, connection) {
             connection.query(queryString, [userID],

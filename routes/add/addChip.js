@@ -6,18 +6,6 @@ module.exports =
         var baseChipQuery = "INSERT INTO chips (chipName, numColors,colorsPerMode, numPatterns, brightnessLevels,multiPattern) VALUES (?,?,?,?,?,?)";
         var mysqlPool = require("../../utils/mysqlPool");
         mysqlPool.getConnection(function (err, connection) {
-            /*connection.query(baseChipQuery,[req.body.name,req.body.colorNumTotal,req.body.colorNum,req.body.numPatterns,req.body.brightnessNum],function (error,results,fields) {
-             if(error)
-             {
-             console.log("Error is in addChip");
-             throw error;
-             }
-             else{
-
-             addColors(req,res,connection,results.insertId);
-             }
-             });*/
-
 
             var multiPatternBoolean = 0;
             if (req.body.numMultiPatterns > 0) {
@@ -45,22 +33,21 @@ module.exports =
                     }
 
 
-                    var colorAddQuery = "INSERT INTO colorsOnChip (chipID,colorID) VALUES ";
-
                     chipID = results.insertId;
                     var params = "";
-                    for (var i = 0; i < req.body.colorNumTotal; i++) {
-                        params += "(" + chipID + "," + req.body.color[i] + "),"
+
+                    var patternQuery = "INSERT INTO patternsOnChips (chipID,patternID) VALUES ";
+                    params = "";
+                    for (var i = 0; i < req.body.numPatterns; i++) {
+                        params += "(" + chipID + "," + req.body.pattern[i] + "),"
                     }
 
                     params = params.substring(0, params.length - 1);
 
-                    console.log(colorAddQuery + params);
-
-                    connection.query(colorAddQuery + params, [], function (err, results) {
+                    connection.query(patternQuery + params, [], function (err, results) {
                         if (err) {
                             return connection.rollback(function () {
-                                console.log("error 2");
+                                console.log("error 3");
                                 console.log(err);
                                 if (err) {
                                     connection.release();
@@ -69,56 +56,34 @@ module.exports =
                             });
                         }
 
-                        var patternQuery = "INSERT INTO patternsOnChips (chipID,patternID) VALUES ";
-                        params = "";
-                        for (var i = 0; i < req.body.numPatterns; i++) {
-                            params += "(" + chipID + "," + req.body.pattern[i] + "),"
-                        }
+                        if (multiPatternBoolean == 0) {
+                            commitAddChip(res, connection);
+                        } else {
 
-                        params = params.substring(0, params.length - 1);
-
-                        connection.query(patternQuery + params, [], function (err, results) {
-                            if (err) {
-                                return connection.rollback(function () {
-                                    console.log("error 3");
-                                    console.log(err);
-                                    if (err) {
-                                        connection.release();
-                                        res.send("fail");
-                                    }
-                                });
+                            var multiPatternQuery = "INSERT INTO multiPatternsOnChip (chipID,multiPatternID) VALUES ";
+                            params = "";
+                            for (var i = 0; i < req.body.numMultiPatterns; i++) {
+                                params += "(" + chipID + "," + req.body.multiPattern[i] + "),"
                             }
 
-                            if (multiPatternBoolean == 0) {
-                                commitAddChip(res, connection);
-                            } else {
+                            params = params.substring(0, params.length - 1);
 
-                                var multiPatternQuery = "INSERT INTO multiPatternsOnChip (chipID,multiPatternID) VALUES ";
-                                params = "";
-                                for (var i = 0; i < req.body.numMultiPatterns; i++) {
-                                    params += "(" + chipID + "," + req.body.multiPattern[i] + "),"
+                            connection.query(multiPatternQuery + params, [], function (err, results) {
+                                if (err) {
+                                    return connection.rollback(function () {
+                                        console.log("error 4");
+                                        console.log(err);
+                                        if (err) {
+                                            connection.release();
+                                            res.send("fail");
+                                        }
+                                    });
                                 }
 
-                                params = params.substring(0, params.length - 1);
+                                commitAddChip(res, connection);
+                            });
+                        }
 
-                                connection.query(multiPatternQuery + params, [], function (err, results) {
-                                    if (err) {
-                                        return connection.rollback(function () {
-                                            console.log("error 4");
-                                            console.log(err);
-                                            if (err) {
-                                                connection.release();
-                                                res.send("fail");
-                                            }
-                                        });
-                                    }
-
-                                    commitAddChip(res, connection);
-                                });
-                            }
-
-
-                        });
 
                     });
 
@@ -143,32 +108,5 @@ function commitAddChip(res, connection) {
         console.log('success!');
         connection.release();
         res.send("success");
-    });
-}
-
-
-function addColors(req, res, connection, insertID) {
-
-    var colorAddQuery = "INSERT INTO colorsOnChip (chipID,colorID) VALUES ";
-
-    var params = "";
-    for (var i = 0; i < req.body.colorNumTotal; i++) {
-        params += "(" + insertID + "," + req.body.color[i] + "),"
-    }
-
-    params = params.substring(0, params.length - 1);
-
-    console.log(colorAddQuery + params);
-
-    connection.query(colorAddQuery + params, [], function (error, results, fields) {
-        if (error) {
-            console.log("Error is in addChip");
-            throw error;
-        }
-        else {
-            console.log(params);
-            res.send(params);
-            connection.release();
-        }
     });
 }

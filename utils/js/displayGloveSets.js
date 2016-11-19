@@ -5,7 +5,7 @@ function bindButton(i,setID) {
         if(button.css("background-color")!="rgb(255, 165, 0)") {
 
             $.ajax({
-                url: "./add/givePoint",
+                url: "../add/givePoint",
                 type: "POST",
                 data: "setID="+setID,
                 success: function (point) {
