@@ -5,7 +5,7 @@ div.gloveSets{
 }
 
 div.setPopup {
-    position: absolute;
+    position: fixed;
     left: 20%;
     top: 35%;
     width: 60%;
@@ -16,7 +16,7 @@ div.setPopup {
 
 div.darkBackground {
     display: none;
-    position: absolute;
+    position: fixed;
     background-color: rgba(0, 0, 0, 0.66);
     width: 100%;
     height: 100%;
