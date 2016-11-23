@@ -6,9 +6,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.js"></script>
     <script src="../utils/js/displayGloveSets.js"></script>
+    <script src="../utils/js/select2.full.js"></script>
     <script src="../utils/js/getCookies.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/index.css">
     <link rel="stylesheet" type="text/css" href="../utils/css/displayGloveSets.css">
+    <link rel="stylesheet" type="text/css" href="../utils/css/select2.css">
 
     <script>
 
@@ -24,6 +26,8 @@
 
             loadAndDisplaySets("chipID=0&colorGroupID=0&timeID=0");
 
+            $("#timeDropDown").select2({ width: 'resolve',minimumResultsForSearch: -1 });
+
             $.ajax({
                 url: getChipsUrl,
                 type: "POST",
@@ -31,7 +35,7 @@
                 success: function (chips) {
                     chipsG = chips;
                     var htmlString = "";
-                    htmlString += "<select id='chipDropDown' name='chipID'>";
+                    htmlString += "<select style='width: 130px' id='chipDropDown' name='chipID'>";
                     htmlString += "<option value='0'>all chips</option>";
                     for (var z = 0; z < chips.length; z++) {
                         console.log(chips[z]);
@@ -40,6 +44,7 @@
                     htmlString += "</select>";
                     console.log(htmlString);
                     $("#chipsTD").html(htmlString);
+                    $("#chipDropDown").select2({ width: 'resolve',minimumResultsForSearch: -1 });
                 },
                 error: function (jXHR, textStatus, errorThrown) {
                     alert(errorThrown);
@@ -53,13 +58,26 @@
                 success: function (colors) {
                     //chipsG = chips;
                     var htmlString = "";
-                    htmlString += "<select id='colorDropDown' name='colorGroupID'>";
+                    htmlString += "<select style='width: 110px' id='colorDropDown' name='colorGroupID'>";
                     htmlString += "<option value='0'>all colors</option>";
                     for (var z = 0; z < colors.length; z++) {
                         htmlString += "<option style = 'background: #" + colors[z].hex + "' value='" + colors[z].colorGroupID + "'>" + colors[z].colorGroupName + "</option>";
                     }
                     htmlString += "</select>";
                     $("#colorTD").html(htmlString);
+                    var selector = $("#colorDropDown");
+                    selector.select2({ width: 'resolve',minimumResultsForSearch: -1 });
+                    selector.on('select2:open', function (e) {
+
+                        setTimeout(function(){
+                            for (var z = 0; z < colors.length; z++) {
+                                //console.log($("#select2-colorDropDown-result-"+z).html());
+                                $("#select2-colorDropDown-result-"+(z+1)).css("background-color", "#"+colors[z].hex);
+                                console.log("test "+(z+1));
+                            }
+                        }, 20);
+
+                    });
                 },
                 error: function (jXHR, textStatus, errorThrown) {
                     alert(errorThrown);
@@ -132,7 +150,7 @@
                 <td id="chipsTD"></td>
                 <td id="colorTD"></td>
                 <td id="timeTD">
-                    <select name='timeID'>
+                    <select id="timeDropDown" name='timeID' style="width: 80px">
                         <option value="0">Hot</option>
                         <option value="1">All Time</option>
                         <option value="2">New</option>

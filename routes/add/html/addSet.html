@@ -5,6 +5,8 @@
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="../utils/js/getCookies.js"></script>
+    <script src="../utils/js/select2.full.js"></script>
+    <link rel="stylesheet" type="text/css" href="../utils/css/select2.css">
     <script>
 
         var getChipsUrl = "./getAllAddedChips";
@@ -13,11 +15,11 @@
         var getColorsUrl = "./getAllColorsForChip";
 
         var chipsG = [];
+        var colors = [];
         var brightArray = ["","H","M","L"];
         var selectedChipIndexInArray = 0;
 
         var patternHtml = "";
-        var colorHtml = "";
 
         $(document).ready(function () {
 
@@ -82,7 +84,8 @@
                         url: getColorsUrl,
                         type: "POST",
                         data: $(this).serialize(),
-                        success: function (colors) {
+                        success: function (cols) {
+                            colors = cols;
 
                             for(var find = 0;find<chipsG.length;find++)
                             {
@@ -98,33 +101,42 @@
                             checkMultiPattern(selectedChipIndexInArray);
 
                             console.log(chipsG[selectedChipIndexInArray].colorsPerMode);
-                            var htmlString = "<table class='skinny' cellspacing='0' cellpadding='0'>";
-                            htmlString+="<tr>";
+
+
+                            $("#colors").html(bindColor(0));
                             for(var i = 0;i<chipsG[selectedChipIndexInArray].colorsPerMode;i++) {
+                                var selector = $("#colorDropDown"+i);
+                                selector.select2({width: 'resolve', minimumResultsForSearch: -1});
+                                selector.on('select2:open', function (e) {
 
+                                    setTimeout(function () {
+                                        for (var z = 0; z < colors.length; z++) {
+                                            for(var x = 0;x<chipsG[selectedChipIndexInArray].colorsPerMode;x++) {
+                                                //console.log($("#select2-colorDropDown-result-"+z).html());
+                                                $("#select2-colorDropDown"+x+"-result-" + (colors[z].colorID)).css("background-color", "#" + colors[z].hex);
+                                            }
+                                        }
 
-                                htmlString += "<td><select id='colorDropDown"+i+"' name='colorID' style='margin-top: 4px'>";
-                                htmlString += "<option value='-1'>select color</option>";
-                                for (var z = 0; z < colors.length; z++) {
-                                    htmlString += "<option style = 'background: #"+colors[z].hex+"' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
-                                }
-                                htmlString += "</td></select>";
+                                        for(var x = 0;x<chipsG[selectedChipIndexInArray].colorsPerMode;x++) {
+                                            $("#colorDropDown" + x).on('change', function () {
+
+                                                try {
+                                                    $(this).next().find('.select2-selection').css({
+                                                        backgroundColor: "#" + colors[findWithAttr(colors, this.value)].hex
+                                                    });
+                                                }catch(err)
+                                                {
+                                                    $(this).next().find('.select2-selection').css({
+                                                        backgroundColor: "#FFFFFF"
+                                                    });
+                                                }
+                                            }).trigger('change');
+                                        }
+
+                                    }, 20);
+
+                                });
                             }
-                            htmlString+="</tr><tr>";
-
-                            for(var i = 0;i<chipsG[selectedChipIndexInArray].colorsPerMode;i++) {
-
-
-                                htmlString += "<td><select id='tintDropDown"+i+"' name='tint' style='margin-top: 4px'>";
-                                for (var z = 1; z < chipsG[selectedChipIndexInArray].brightnessLevels+1; z++) {
-                                    htmlString += "<option value='" + z + "'>" + brightArray[z] + "</option>";
-                                }
-                                htmlString += "</td></select>";
-                            }
-
-                            htmlString+="</tr></table>";
-                            colorHtml = htmlString;
-                            $("#colors").html(htmlString);
 
                         },
                         error: function (jXHR, textStatus, errorThrown) {
@@ -132,6 +144,38 @@
                         }
                     });
                 });
+            }
+
+
+            function bindColor(offset)
+            {
+                var htmlString = "<table class='skinny' cellspacing='0' cellpadding='0'>";
+                htmlString+="<tr>";
+                for(var i = offset;i<chipsG[selectedChipIndexInArray].colorsPerMode+offset;i++) {
+
+
+                    htmlString += "<td><select id='colorDropDown"+i+"' name='colorID' style='margin-top: 4px'>";
+                    htmlString += "<option value='-1'>select color</option>";
+                    for (var z = 0; z < colors.length; z++) {
+                        htmlString += "<option style = 'background: #"+colors[z].hex+"' value='" + colors[z].colorID + "'>" + colors[z].colorName + "</option>";
+                    }
+                    htmlString += "</td></select>";
+                }
+                htmlString+="</tr><tr>";
+
+                for(var i = offset;i<chipsG[selectedChipIndexInArray].colorsPerMode+offset;i++) {
+
+
+                    htmlString += "<td><select id='tintDropDown"+i+"' name='tint' style='margin-top: 4px'>";
+                    for (var z = 1; z < chipsG[selectedChipIndexInArray].brightnessLevels+1; z++) {
+                        htmlString += "<option value='" + z + "'>" + brightArray[z] + "</option>";
+                    }
+                    htmlString += "</td></select>";
+                }
+
+                htmlString+="</tr></table>";
+
+                return htmlString;
             }
 
 
@@ -172,8 +216,53 @@
             function multiPatternAdd() {
                 $('#multiPatternDropDown').bind('change', function() {
                     $("#patterns2").html(patternHtml);
-                    $("#colors2").html("<input type='hidden' name='colorID' value='0'>"+colorHtml);
+                    $("#colors2").html("<input type='hidden' name='colorID' value='0'>"+bindColor(chipsG[selectedChipIndexInArray].colorsPerMode));
+
+                    for(var i = chipsG[selectedChipIndexInArray].colorsPerMode;i<chipsG[selectedChipIndexInArray].colorsPerMode*2;i++) {
+                        var selector = $("#colorDropDown"+i);
+                        selector.select2({width: 'resolve', minimumResultsForSearch: -1});
+                        selector.on('select2:open', function (e) {
+
+                            setTimeout(function () {
+                                for (var z = 0; z < colors.length; z++) {
+                                    for(var x = chipsG[selectedChipIndexInArray].colorsPerMode;x<chipsG[selectedChipIndexInArray].colorsPerMode*2;x++) {
+                                        //console.log($("#select2-colorDropDown-result-"+z).html());
+                                        $("#select2-colorDropDown"+x+"-result-" + (colors[z].colorID)).css("background-color", "#" + colors[z].hex);
+                                        //console.log("test " + (z + 1));
+
+                                    }
+                                }
+                                for(var x = chipsG[selectedChipIndexInArray].colorsPerMode;x<chipsG[selectedChipIndexInArray].colorsPerMode*2;x++) {
+                                    $("#colorDropDown" + x).on('change', function () {
+                                        try {
+                                            $(this).next().find('.select2-selection').css({
+                                                backgroundColor: "#" + colors[findWithAttr(colors, this.value)].hex
+                                            });
+                                        }catch(err)
+                                        {
+                                            $(this).next().find('.select2-selection').css({
+                                                backgroundColor: "#FFFFFF"
+                                            });
+                                        }
+                                    }).trigger('change');
+                                }
+
+                            }, 20);
+
+                        });
+                        /**/
+                    }
                 });
+            }
+
+
+            function findWithAttr(array, value) {
+                for(var i = 0; i < array.length; i += 1) {
+                    if(array[i].colorID == value) {
+                        return i;
+                    }
+                }
+                return -1;
             }
 
 
